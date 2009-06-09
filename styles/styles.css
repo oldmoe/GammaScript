@@ -1,0 +1,35 @@
+    body{
+      font-family:Verdana;
+      font-size:24px;
+      background-color:#356AA0;
+	  color:#ff8;
+    }
+    h1{
+      font-size:24px;
+	  margin-bottom:12px;
+    }
+    td{
+      font-family:verdana;
+      font-size:12px;
+	  font-weight:bold;
+    }
+	div{
+	  color:navy;
+	  font-weight:normal;
+    }
+	input{
+      border:1px solid  black;
+    }
+    textarea{
+      border:1px solid  black;
+	  color:navy;
+    }
+    select{
+      border:1px solid  black;
+	  color:navy;
+    }
+    a {
+		color : #fff;
+	}
+
+

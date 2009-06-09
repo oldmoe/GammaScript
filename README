@@ -1,0 +1,37 @@
+GAMMAScript 
+
+This is a (semi) GAMMA programming environment. Elements of the multiset will attempt to react based on the conditions and reactions you supply to them, you can add elements to the multiset as a comma separated list of values or using the sart button to generate a random set of elements (after setting the element count in the textbox)
+
+Gamma programs are added in a form of condition/reaction pairs here are some sample programs
+
+var max = {
+	name : "max",
+	condition : function(x,y){
+		x.data >= y.data;	
+	},
+	reaction : function(x,y){
+		x.consume(y);
+	}
+}
+
+var min = {
+	name : "min",
+	condition : function(x,y){
+		x.data <= y.data;	
+	},
+	reaction : function(x,y){
+		x.consume(y);
+	}
+}
+
+When you create a new multiset instance and add programs to it, all programs run in parallel
+
+elements interact with the environment as if each of them is having it's own thread of execution (not literally but that's the final effect) and each tries to find elements that satisfy the reaction conditions to be able to react with
+
+The file gamma.html includes a sample program that calculates PI in parallel. It builds on the fact that PI can be described as the area under the curve Y = 4/(x^2) where x belongs to [0,1]. The multi set is initialized by a single element, the range [0,1] and three programs are defined
+
+1 - Decompose, which checks ranges to see if they are larger than a certain threshold in which case it decomposes them
+2 - Area, calculates the area for the slice represented by the range the is smaller than the threshold. The range is approximated to be a rectangle since it is so small already.
+3 - Sum, will add any 2 numbers it finds (but will avoid ranges). Numbers should add up until there is a single element in the multiset which repsents the approximate value of PI.
+
+To see the program in action click the 'add' link on the top left and then click the start button

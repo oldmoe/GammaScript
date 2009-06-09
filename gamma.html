@@ -1,0 +1,140 @@
+<html>
+<hrad>
+<title>GAMMAScript</title>
+<link href="styles/styles.css" rel="Stylesheet" type="text/css" />
+	<script>
+		Object.prototype.augmentObject = function(obj){
+		    for(var i in obj){this[i] = obj[i]}
+			return this;
+		}
+		Object.prototype.begetObject = function(obj){
+		    function F(obj) {if(obj){this.augmentObject(obj)}}
+		    F.prototype = this;
+		    return new F(obj);
+		}	
+	</script>
+	<SCRIPT src="vendor/prototype.js"></SCRIPT>
+	<script src="javascripts/gammaElement.js"></script>
+	<script src="javascripts/gamma.js"></script>
+	<script src="javascripts/multiset.js"></script>
+</head>
+<body>
+    <center><h1>GAMMAScript</h1></center>
+    <table border=0 width="100%" align="center">
+        <tr>
+            <td width="15%">Elements (<a href="javascript://" onclick="addElements()">add</a>)</td>
+            <td>Active (<a href="javascript://" onclick="S.clearElements()">clear</a>)</td>
+			<td width="10%">&nbsp;</td>	
+            <td	>Programs (<a href="javascript://" onclick="S.removeProgram($('programs').value)">remove</a>)
+            (<a href="javascript://" onclick="S.activateProgram($('programs').value)">[de]acivate</a>)
+            </td>
+            <td width=100%>&nbsp;</td>
+        </tr>
+        <tr valign="top">
+            <td><textarea wrap="OFF" id="elements" cols="11" rows="24">[0,1]</textarea></td>
+            <td><div  id="after" style="width:255;height:402;background:white;border:1px solid black"></div></td>
+            <td valign="top"><div><canvas id="canvas" style="border:2px solid black;width:600;height:400;background:white"></canvas></div></td>
+            <td valign="top"><select id="programs" size=25 style="width:245"></select></td>
+            <td width=100%>&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan=7>
+				<br/>
+                <input type="hidden" id="count" size=4 value="0" />
+                Element Delay (ms) <input type="text" id="delay" size=1 value="5" onChange="S.options.interval=this.value"/>
+				Assosciation <select id="association">
+								<option value="proximity">2D Proximity</option>
+								<option value="random">Random</option>
+							</select>
+                <input type="button" value ="start"/ onClick="S.activate();">
+                <input type="button" value ="stop" onClick="S.deactivate();"/>
+            </td>
+        </tr>
+ </table>
+</body>
+</html>
+<script language="javascript">
+
+
+
+//var console = new AdvancedConsole("console");
+//var before = new AdvancedConsole("before");
+var after = new AdvancedConsole("after");
+
+function im(){
+  alert(S.data[$("im").value].data.toSource());
+}
+
+var S = Multiset.begetObject({active:true,association:$('association').value});
+
+var max = {
+	name:"max",
+	condition:function(x,y){
+		return x.data >= y.data;
+	},
+	reaction:function(x,y){
+		x.consume(y);
+	}
+}
+
+var min = {
+	name:"min",
+	condition:function(x,y){
+		return x.data <= y.data;
+	},
+	reaction:function(x,y){
+		x.consume(y);
+	}
+}
+
+var decompose = {
+	unit: 0.01,
+	name:"decompose",
+	condition:function(x){
+		return !x.decomposed;
+	},
+	reaction:function(x){
+		var d = x.data
+		if (d[1] > (d[0]+this.unit)){
+			var temp = d[1];
+			d[1] = d[0]+this.unit;
+			x.produce([d[1],temp]);
+		}else{
+			x.decomposed = true;
+		}
+	}
+}
+
+var area = {
+	name:"area",
+	condition:function(x){
+		return ((!x.calculated) && x.decomposed);
+	},
+	reaction:function(x){
+		function height(k){
+			return 4/(1+(k*k))
+		}	
+		var d = x.data
+		var h = (height(d[0])+height(d[1]))/2;
+		var w = d[1]-d[0];
+		x.data = h * w;
+		x.calculated = true;
+	}
+}
+
+var sum = {
+	name:"sum",
+	condition:function(x,y){
+		return (x.calculated && x.decomposed && y.calculated && y.decomposed);
+	},
+	reaction:function(x,y){
+		x.data += y.data;
+		x.consume(y);
+	}
+}
+
+var pm = new ProgramManager("programs");
+S.addProgram(decompose);
+S.addProgram(area);
+S.addProgram(sum);
+</script>
